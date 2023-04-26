@@ -1,3 +1,5 @@
+import QueryResponse from './queryResponse.js';
+
 class Database {
   constructor() {}
 
@@ -11,6 +13,8 @@ class Database {
   }
 
   validate(name, data) {
+    const validatedData = {};
+
     for (const [field, properties] of Object.entries(this[name]['_schema'])) {
       // Validation shouldn't run on default properties - 'id', 'createdAt', 'updatedAt'
       if (!['id', 'createdAt', 'updatedAt'].includes(field)) {
@@ -24,11 +28,14 @@ class Database {
             }
 
             case 'type': {
-              if (
-                data.hasOwnProperty(field) &&
-                typeof data[field] !== value.toLowerCase()
-              ) {
-                throw new Error(`${field} should be of type ${value}.`);
+              if (data.hasOwnProperty(field)) {
+                const isNotValidType =
+                  value === 'Array'
+                    ? !Array.isArray(data[field])
+                    : typeof data[field] !== value.toLowerCase();
+
+                if (isNotValidType)
+                  throw new Error(`${field} should be of type ${value}.`);
               }
               break;
             }
@@ -53,13 +60,20 @@ class Database {
 
             case 'trim': {
               if (typeof data[field] === 'string') {
-                data[field] = data[field].trim();
+                validatedData[field] = data[field].trim();
+              }
+              break;
+            }
+
+            case 'lowercase': {
+              if (typeof data[field] === 'string') {
+                validatedData[field] = data[field].toLowerCase();
               }
               break;
             }
 
             case 'default': {
-              if (!data.hasOwnProperty(field)) data[field] = value;
+              if (!data.hasOwnProperty(field)) validatedData[field] = value;
               break;
             }
 
@@ -72,18 +86,44 @@ class Database {
               break;
             }
 
+            case 'match': {
+              if (data.hasOwnProperty(field)) {
+                const isValidPattern = data[field].match(value?.[0]);
+                if (!isValidPattern)
+                  throw new Error(value?.[1] || 'Invalid pattern');
+              }
+              break;
+            }
+
+            case 'unique': {
+              if (data.hasOwnProperty(field)) {
+                const normalizedData = Object.values(this[name].store);
+                const valueExists = normalizedData.find(
+                  (d) => d[field] === data[field]
+                );
+
+                if (valueExists) throw new Error(`${field} is already in use!`);
+              }
+              break;
+            }
+
             default:
               break;
           }
         }
+
+        if (!validatedData.hasOwnProperty(field))
+          validatedData[field] = data[field];
       }
     }
 
     // Populate 'id' & 'createdAt' only during creation
-    if (!data.hasOwnProperty('id')) data.id = Date.now().toString();
-    if (!data.hasOwnProperty('createdAt')) data.createdAt = new Date();
+    if (!data.hasOwnProperty('id')) validatedData.id = Date.now().toString();
+    if (!data.hasOwnProperty('createdAt')) validatedData.createdAt = new Date();
 
-    data.updatedAt = new Date();
+    validatedData.updatedAt = new Date();
+
+    return validatedData;
   }
 
   write(data) {
@@ -92,9 +132,10 @@ class Database {
 
       const { id, createdAt, updatedAt, ...rest } = data;
 
-      this.validate(schemaName, rest);
-      this[schemaName].store[rest.id] = rest;
-      return rest;
+      const validatedData = this.validate(schemaName, rest);
+      this[schemaName].store[validatedData.id] = validatedData;
+
+      return validatedData;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -137,33 +178,9 @@ class Database {
     return filtersArray.join('&&');
   }
 
-  sort(data, properties) {
-    if (!data.length) return;
-
-    const { sortBy = 'id', orderBy = 'asc' } = properties;
-
-    return data.sort((a, b) => {
-      if (!a.hasOwnProperty(sortBy)) throw new Error('Invalid sort property');
-
-      switch (orderBy) {
-        case 'asc': {
-          return a[sortBy] - b[sortBy];
-        }
-
-        case 'desc': {
-          return b[sortBy] - a[sortBy];
-        }
-
-        default:
-          throw new Error('Invalid order property');
-      }
-    });
-  }
-
-  find(filters = {}, sort = {}) {
+  find(filters = {}) {
     const schemaName = Object.keys(this)[0];
     const filtersLength = Object.entries(filters).length;
-    const sortLength = Object.entries(sort).length;
 
     let filteredData;
 
@@ -182,9 +199,7 @@ class Database {
       });
     }
 
-    if (!sort || !sortLength) return filteredData;
-
-    return this.sort(filteredData, sort);
+    return new QueryResponse(filteredData);
   }
 
   findById(id) {
