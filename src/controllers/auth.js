@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '.././models/user.js';
-import { STATUS } from '../utils/constants.js';
+import { COOKIE, STATUS } from '../utils/constants.js';
 import {
   successResponseBody,
   errorResponseBody,
@@ -17,7 +17,7 @@ const register = async (req, res) => {
 
     const token = jwt.sign(
       {
-        _id: user.id,
+        id: user.id,
       },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
@@ -25,7 +25,7 @@ const register = async (req, res) => {
 
     user.password = undefined;
 
-    res.cookie('token', token, {
+    res.cookie(COOKIE.AUTH, token, {
       httpOnly: true,
       // domain: '',
       secure: process.env.NODE_ENV !== 'development', // Only works on https
@@ -54,7 +54,7 @@ const login = async (req, res) => {
       if (isPasswordValid) {
         const token = jwt.sign(
           {
-            _id: user._id,
+            id: user.id,
           },
           process.env.JWT_SECRET,
           { expiresIn: '1d' }
@@ -62,7 +62,7 @@ const login = async (req, res) => {
 
         user.password = undefined;
 
-        res.cookie('token', token, {
+        res.cookie(COOKIE.AUTH, token, {
           httpOnly: true,
           // domain: '',
           secure: process.env.NODE_ENV !== 'development', // Only works on https
