@@ -1,7 +1,7 @@
 // This class contains additional utility methods that can be executed after reading data from the database.
 class QueryResponse {
   constructor(res) {
-    this.res = res;
+    this.result = res;
   }
 
   sort(properties) {

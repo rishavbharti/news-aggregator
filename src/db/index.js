@@ -135,7 +135,7 @@ class Database {
       const validatedData = this.validate(schemaName, rest);
       this[schemaName].store[validatedData.id] = validatedData;
 
-      return validatedData;
+      return structuredClone(validatedData);
     } catch (error) {
       throw new Error(error.message);
     }
@@ -199,7 +199,7 @@ class Database {
       });
     }
 
-    return new QueryResponse(filteredData);
+    return new QueryResponse(structuredClone(filteredData));
   }
 
   findById(id) {
