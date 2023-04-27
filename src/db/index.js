@@ -12,12 +12,17 @@ class Database {
     return this;
   }
 
-  validate(name, data) {
+  validate(name, data, validateOnlyDataFields = false) {
     const validatedData = {};
 
     for (const [field, properties] of Object.entries(this[name]['_schema'])) {
-      // Validation shouldn't run on default properties - 'id', 'createdAt', 'updatedAt'
-      if (!['id', 'createdAt', 'updatedAt'].includes(field)) {
+      const shouldValidate =
+        // Validation shouldn't run on default properties - 'id', 'createdAt', 'updatedAt'
+        !['id', 'createdAt', 'updatedAt'].includes(field) &&
+        // Validate only data fields on update
+        (validateOnlyDataFields ? data.hasOwnProperty(field) : true);
+
+      if (shouldValidate) {
         for (const [property, value] of Object.entries(properties)) {
           switch (property) {
             case 'required': {
@@ -118,9 +123,11 @@ class Database {
     }
 
     // Populate 'id' & 'createdAt' only during creation
-    if (!data.hasOwnProperty('id')) validatedData.id = Date.now().toString();
-    if (!data.hasOwnProperty('createdAt')) validatedData.createdAt = new Date();
-
+    if (!validateOnlyDataFields) {
+      if (!data.hasOwnProperty('id')) validatedData.id = Date.now().toString();
+      if (!data.hasOwnProperty('createdAt'))
+        validatedData.createdAt = new Date();
+    }
     validatedData.updatedAt = new Date();
 
     return validatedData;
@@ -207,7 +214,7 @@ class Database {
 
     if (!id) throw new Error('ID is required');
 
-    return this[schemaName].store[id];
+    return new QueryResponse(structuredClone(this[schemaName].store[id]));
   }
 
   findByIdAndUpdate(dataId, data) {
@@ -215,20 +222,43 @@ class Database {
 
     if (!dataId) throw new Error('ID is required');
     if (!this[schemaName].store.hasOwnProperty(dataId))
-      throw new Error("Couldn't find a task with the given id");
+      throw new Error("Couldn't find an item with the given id");
 
     const { id, createdAt, updatedAt, ...rest } = data;
 
-    const validatedData = {
+    const validatedData = this.validate(schemaName, rest, true);
+
+    for (const [key, value] of Object.entries(validatedData)) {
+      const typeInSchema = this[schemaName]['_schema'][key]?.type;
+
+      switch (typeInSchema) {
+        case 'Array': {
+          validatedData[key] = [
+            ...this[schemaName].store[dataId][key],
+            ...value,
+          ];
+          break;
+        }
+
+        case 'Object': {
+          validatedData[key] = {
+            ...this[schemaName].store[dataId][key],
+            ...value,
+          };
+          break;
+        }
+
+        default:
+          break;
+      }
+    }
+
+    this[schemaName].store[dataId] = {
       ...this[schemaName].store[dataId],
-      ...rest,
+      ...validatedData,
     };
 
-    this.validate(schemaName, validatedData);
-
-    this[schemaName].store[dataId] = validatedData;
-
-    return this[schemaName].store[dataId];
+    return new QueryResponse(structuredClone(this[schemaName].store[dataId]));
   }
 
   deleteOne(filters) {
