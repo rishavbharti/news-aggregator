@@ -1,3 +1,4 @@
+// TODO: Move this to a separate class
 /**
  * This object will be used as a template for building error responses
  */

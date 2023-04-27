@@ -11,4 +11,8 @@ const STATUS_CODES = {
   PAYMENT_REQUIRED: 402,
 };
 
-export { STATUS_CODES as STATUS };
+const COOKIE_NAMES = {
+  AUTH: 'Bearer',
+};
+
+export { STATUS_CODES as STATUS, COOKIE_NAMES as COOKIE };
