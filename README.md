@@ -3,7 +3,7 @@
 This project serves as a backend for a News Aggregator application which allows one to create an account, add their preferences and read news articles based on them.
 
 This service is implemented in [Node.js](https://nodejs.org/en) using [Express](https://expressjs.com/).
-It stores the tasks in a custom-built [In-memory database](https://github.com/rishavbharti/taskmanager/tree/development/src/db/index.js).
+It stores the data in a custom-built [In-memory database](https://github.com/rishavbharti/news-aggregator/tree/development/src/db/index.js).
 
 ## Project Setup
 
@@ -98,7 +98,7 @@ This returns the user details saved in the database, excluding the password. And
 @route   GET api/news
 ```
 
-For ease of testing, one can use the [news-aggregator Postman collection](https://github.com/rishavbharti/taskmanager/tree/development/news-aggregator.postman_collection.json) present in the repo.
+For ease of testing, one can use the [news-aggregator Postman collection](https://github.com/rishavbharti/news-aggregator/tree/development/news-aggregator.postman_collection.json) present in the repo.
 
 #
 
