@@ -13,6 +13,7 @@ the first step is [installing Node.js](https://cloud.google.com/nodejs/docs/setu
 - Make sure Node.js version 18 LTS or later is installed.
 - Setup Git and clone this repository to a working directory.
 - Point a terminal to the project's folder and run `npm i` in the project root to install dependencies.
+- Generate a new key from [newsapi.ai](https://www.newsapi.ai/), if the key here is invalid.
 
 After finishing the setup, run `npm start` to start the development server. By default, server is set to run on port 8000 and can be accessed at [http://localhost:8000/](http://localhost:8000/).
 
