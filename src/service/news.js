@@ -9,8 +9,6 @@ const fetchNewsFromAPI = () => {
     headers: { 'Content-Type': ' application/json' },
   });
 
-  console.log('here');
-
   axios
     .all(
       NEWS_TOPICS.map((topic) =>
@@ -36,11 +34,11 @@ const fetchNewsFromAPI = () => {
         (topic, index) =>
           (newsCache[topic] = response[index]?.data?.articles?.results)
       );
-
-      // Update cache after 2 hours
-      setTimeout(fetchNewsFromAPI, 7200000); // 7200000 ms = 2 hours
     })
     .catch((err) => console.log(err));
+
+  // Update cache after 2 hours
+  setTimeout(fetchNewsFromAPI, 7200000); // 7200000 ms = 2 hours
 };
 
 export { newsCache, fetchNewsFromAPI };
