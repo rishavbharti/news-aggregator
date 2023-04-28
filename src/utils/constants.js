@@ -15,4 +15,14 @@ const COOKIE_NAMES = {
   AUTH: 'Bearer',
 };
 
-export { STATUS_CODES as STATUS, COOKIE_NAMES as COOKIE };
+const NEWS_TOPICS = [
+  'business',
+  'entertainment',
+  'general',
+  'health',
+  'science',
+  'sports',
+  'technology',
+];
+
+export { STATUS_CODES as STATUS, COOKIE_NAMES as COOKIE, NEWS_TOPICS };

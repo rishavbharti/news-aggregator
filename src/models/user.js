@@ -1,4 +1,5 @@
 import Database from '../db/index.js';
+import { NEWS_TOPICS } from '../utils/constants.js';
 
 const userSchema = {
   username: {
@@ -31,6 +32,7 @@ const userSchema = {
   preferences: {
     type: 'Array',
     default: [],
+    values: NEWS_TOPICS,
   },
   read: {
     type: 'Array',

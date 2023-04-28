@@ -91,6 +91,18 @@ class Database {
               break;
             }
 
+            case 'values': {
+              if (data.hasOwnProperty(field)) {
+                const hasValidValues = data[field].every((val) =>
+                  value.includes(val)
+                );
+
+                if (!hasValidValues)
+                  throw new Error(`${field} should have values from ${value}.`);
+              }
+              break;
+            }
+
             case 'match': {
               if (data.hasOwnProperty(field)) {
                 const isValidPattern = data[field].match(value?.[0]);
@@ -222,7 +234,7 @@ class Database {
 
     if (!dataId) throw new Error('ID is required');
     if (!this[schemaName].store.hasOwnProperty(dataId))
-      throw new Error("Couldn't find an item with the given id");
+      throw new Error("Couldn't find a record with the given id");
 
     const { id, createdAt, updatedAt, ...rest } = data;
 
@@ -268,7 +280,7 @@ class Database {
 
     if (filters?.id) {
       if (!this[schemaName].store.hasOwnProperty(filters.id))
-        throw new Error("Couldn't find a task with the given id");
+        throw new Error("Couldn't find a record with the given id");
 
       delete this[schemaName].store[filters.id];
       return true;
