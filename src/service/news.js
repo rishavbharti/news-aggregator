@@ -32,7 +32,7 @@ const fetchNewsFromAPI = () => {
       )
     )
     .then((response) => {
-      NEWS_TOPICS.map(
+      NEWS_TOPICS.forEach(
         (topic, index) =>
           (newsCache[topic] = response[index]?.data?.articles?.results)
       );

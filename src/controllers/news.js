@@ -15,7 +15,7 @@ const getNews = (req, res) => {
 
     const news = {};
 
-    _preferences.map(
+    _preferences.forEach(
       (preference) =>
         (news[preference] = newsCache?.[preference]?.slice(0, 10) || [])
     );
