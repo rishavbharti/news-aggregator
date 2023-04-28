@@ -1,12 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import * as routes from './src/routes/index.js';
+import { fetchNewsFromAPI } from './src/service/news.js';
 
 // Create express app
 const app = express();
 dotenv.config();
 
 app.use(express.json());
+
+fetchNewsFromAPI();
 
 app.get('/', (req, res) => {
   res
