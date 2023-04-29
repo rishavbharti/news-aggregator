@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { COOKIE, STATUS } from '../utils/constants.js';
 import { errorResponseBody } from '../utils/responseBody.js';
 import User from '../models/user.js';
+import { getCookie } from '../utils/cookie.js';
 
 const validateRegisterRequest = (req, res, next) => {
   const { username, email, password } = req.body;
@@ -36,22 +37,8 @@ const validateLoginRequest = (req, res, next) => {
   next();
 };
 
-function getCookie(req) {
-  const cookies = req.headers?.cookie?.split(';');
-  if (!cookies) return null;
-
-  const cookie = cookies.find((cookie) => {
-    const _cookie = cookie?.split('=');
-    return _cookie?.[0] === COOKIE.AUTH;
-  });
-
-  if (cookie) return cookie.split('=')?.[1];
-
-  return null;
-}
-
 const authenticate = (req, res, next) => {
-  const cookie = getCookie(req);
+  const cookie = getCookie(req, COOKIE.AUTH);
 
   if (cookie) {
     try {
