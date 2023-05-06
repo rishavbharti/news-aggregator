@@ -16,6 +16,10 @@ const validateRegisterRequest = (req, res, next) => {
     errorResponseBody.error = `${missingField} not present in the request!`;
 
     return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
+  } else if (password.length < 6 || password.length > 12) {
+    errorResponseBody.error = `Password must be between 6 to 12 characters.`;
+
+    return res.status(STATUS.BAD_REQUEST).json(errorResponseBody);
   }
 
   // If the request is valid
