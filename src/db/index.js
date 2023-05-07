@@ -286,6 +286,13 @@ class Database {
       return true;
     }
   }
+
+  deleteAll() {
+    const schemaName = Object.keys(this)[0];
+    this[schemaName].store = {};
+
+    return true;
+  }
 }
 
 export default Database;
