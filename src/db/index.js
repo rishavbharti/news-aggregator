@@ -250,14 +250,6 @@ class Database {
             ...this[schemaName].store[dataId][key],
             ...value,
           ];
-
-          // console.log(
-          //   'this[schemaName].store[dataId][key] ',
-          //   key,
-          //   this[schemaName].store,
-          //   this[schemaName].store[dataId][key],
-          //   value
-          // );
           break;
         }
 
