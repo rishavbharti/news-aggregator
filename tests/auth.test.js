@@ -14,10 +14,10 @@ test('Should signup a new user', async () => {
       email: 'rishav@example.com',
       password: 'password',
     })
-    .expect(201);
+    .expect(STATUS.CREATED);
 
   // Assert that the database was changed correctly
-  const user = User.findById(response.body.data.id);
+  const { result: user } = User.findById(response.body.data.id);
   expect(user).not.toBeNull();
 
   // Assertions about the response
@@ -62,7 +62,7 @@ test('Should login a valid user', async () => {
       email: 'rishav@example.com',
       password: 'password',
     })
-    .expect(200);
+    .expect(STATUS.OK);
 
   // Assert that the database was changed correctly
   const user = User.findById(response.body.data.id);
@@ -85,7 +85,7 @@ test('Should not login with unregistered email', async () => {
       email: 'rishav1@example.com',
       password: 'password',
     })
-    .expect(404);
+    .expect(STATUS.NOT_FOUND);
 
   expect(response.body.error).toBe(
     "Sorry, we don't recognize that username or password. You can try again or reset your password"
@@ -101,7 +101,7 @@ test('Should not login when password is invalid', async () => {
       email: 'rishav@example.com',
       password: 'password123',
     })
-    .expect(404);
+    .expect(STATUS.NOT_FOUND);
 
   expect(response.body.error).toBe(
     "Sorry, we don't recognize that username or password. You can try again or reset your password"

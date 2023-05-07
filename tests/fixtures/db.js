@@ -1,4 +1,5 @@
 import User from '../../src/models/user.js';
+import { generateJWT } from '../../src/utils/jwt.js';
 import { hashPassword } from '../../src/utils/password.js';
 
 const userOnePassword = await hashPassword('password');
@@ -18,10 +19,12 @@ const userTwo = {
 
 const setupDatabase = () => {
   User.deleteAll();
-  const { userOneId } = User.write(userOne);
-  const { userTwoId } = User.write(userTwo);
+  const { id: userOneId } = User.write(userOne);
+  const { id: userTwoId } = User.write(userTwo);
 
-  return { userOneId, userTwoId };
+  const userOneAuthToken = generateJWT(userOneId);
+
+  return { userOneId, userOneAuthToken, userTwoId };
 };
 
 export { userOne, userTwo, setupDatabase };
