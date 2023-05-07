@@ -136,7 +136,8 @@ class Database {
 
     // Populate 'id' & 'createdAt' only during creation
     if (!validateOnlyDataFields) {
-      if (!data.hasOwnProperty('id')) validatedData.id = Date.now().toString();
+      if (!data.hasOwnProperty('id'))
+        validatedData.id = Math.ceil(Date.now().toString() * Math.random());
       if (!data.hasOwnProperty('createdAt'))
         validatedData.createdAt = new Date();
     }
@@ -249,6 +250,14 @@ class Database {
             ...this[schemaName].store[dataId][key],
             ...value,
           ];
+
+          // console.log(
+          //   'this[schemaName].store[dataId][key] ',
+          //   key,
+          //   this[schemaName].store,
+          //   this[schemaName].store[dataId][key],
+          //   value
+          // );
           break;
         }
 
