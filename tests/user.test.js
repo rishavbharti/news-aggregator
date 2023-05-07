@@ -13,7 +13,7 @@ beforeAll(() => {
   _userOneId = userOneId;
 });
 
-test('Add news preferences', async () => {
+test('Update news preferences', async () => {
   const response = await request(app)
     .put('/api/user/preferences')
     .set('Cookie', [`${COOKIE.AUTH}=${_userOneAuthToken}`])
@@ -24,10 +24,10 @@ test('Add news preferences', async () => {
 
   // Assert that the database was changed correctly
   const { result: user } = User.findById(_userOneId);
-  expect(user.preferences).toEqual(['business', 'general']);
+  expect(user.preferences).toEqual(['entertainment', 'business', 'general']);
 
   expect(response.body).toMatchObject({
-    data: ['business', 'general'],
+    data: ['entertainment', 'business', 'general'],
   });
 });
 
@@ -38,6 +38,6 @@ test('Get news preferences', async () => {
     .expect(STATUS.OK);
 
   expect(response.body).toMatchObject({
-    data: ['business', 'general'],
+    data: ['entertainment', 'business', 'general'],
   });
 });

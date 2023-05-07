@@ -9,6 +9,7 @@ const userOne = {
   username: 'John',
   email: 'john@example.com',
   password: userOnePassword,
+  preferences: ['entertainment'],
 };
 
 const userTwo = {
