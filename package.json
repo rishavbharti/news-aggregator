@@ -8,10 +8,6 @@
     "start": "node --watch src/index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
-  "jest": {
-    "testEnvironment": "jest-environment-node",
-    "transform": {}
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rishavbharti/news-aggregator.git"
