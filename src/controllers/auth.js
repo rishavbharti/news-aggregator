@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import User from '.././models/user.js';
 import { COOKIE, STATUS } from '../utils/constants.js';
 import {
@@ -6,6 +5,7 @@ import {
   errorResponseBody,
 } from '../utils/responseBody.js';
 import { hashPassword, comparePassword } from '../utils/password.js';
+import { generateJWT } from '../utils/jwt.js';
 
 const register = async (req, res) => {
   try {
@@ -15,13 +15,7 @@ const register = async (req, res) => {
 
     const user = User.write({ ...rest, password: hashedPassword });
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
+    const token = generateJWT(user.id);
 
     user.password = undefined;
 
@@ -52,13 +46,7 @@ const login = async (req, res) => {
       const isPasswordValid = await comparePassword(password, user.password);
 
       if (isPasswordValid) {
-        const token = jwt.sign(
-          {
-            id: user.id,
-          },
-          process.env.JWT_SECRET,
-          { expiresIn: '1d' }
-        );
+        const token = generateJWT(user.id);
 
         user.password = undefined;
 

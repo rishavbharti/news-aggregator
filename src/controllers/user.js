@@ -26,10 +26,16 @@ const getPreferences = (req, res) => {
 const updatePreferences = (req, res) => {
   try {
     const { preferences } = req.body;
-    const { id: userId } = req.user || {};
+    const { id: userId, preferences: existingPreferences } = req.user || {};
 
-    if (!userId || !preferences || !Array.isArray(preferences))
-      throw new Error();
+    if (!preferences || !Array.isArray(preferences) || !preferences?.length)
+      throw new Error('Preferences must be an array of strings.');
+
+    preferences.forEach((preference) => {
+      if (existingPreferences.includes(preference)) {
+        throw new Error(`${preference} already exists!`);
+      }
+    });
 
     const { result } = User.findByIdAndUpdate(userId, { preferences });
 

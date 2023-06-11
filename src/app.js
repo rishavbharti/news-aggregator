@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import * as routes from './src/routes/index.js';
-import { fetchNewsFromAPI } from './src/service/news.js';
+import * as routes from './routes/index.js';
+import { fetchNewsFromAPI } from './service/news.js';
 
 // Create express app
 const app = express();
@@ -21,12 +21,4 @@ routes.allPaths.map((p) => {
   app.use('/api', routes[p]);
 });
 
-const PORT = process.env.PORT || 8000;
-
-app.listen(PORT, (error) => {
-  if (!error) {
-    console.log(
-      'Server is successfully running and app is listening on port ' + PORT
-    );
-  } else console.log("Error occurred, server can't start", error);
-});
+export default app;
